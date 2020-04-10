@@ -2,7 +2,7 @@
 
 
 - name: copy kernel to boot directory
-  copy: 
+  copy:
     src: "{{ kernel_build_path }}/arch/{{ compile_architecture }}/boot/bzImage"
     dest: "/boot/vmlinuz-linux{{ kernel_version  | replace('.', '-') }}{{ kernel_substring }}"
   become: yes
@@ -20,4 +20,8 @@
 
 - name: create initram image
   command: mkinitcpio -c {{ kernel_build_path }}/mkinitcpio.conf -p linux{{ kernel_version  | replace('.', '-')  }}{{ kernel_substring }}
+  args:
+    creates:
+      - "/boot/{{ initramfs-linux }}{{ kernel_version  | replace('.', '-')  }}{{ kernel_substring }}.img"
+      - "/boot/{{ initramfs-linux }}{{ kernel_version  | replace('.', '-')  }}{{ kernel_substring }}-fallback.img"
   become: yes

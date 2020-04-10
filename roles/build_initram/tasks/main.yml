@@ -6,5 +6,4 @@
 
 - name: use initram method for arch linux systems
   include_tasks: arch.yml
-  when: ansible_distribution == "Archlinux" 
-
+  when: ansible_distribution == "Archlinux"

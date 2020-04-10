@@ -3,30 +3,30 @@
 
 ## TODO: add flags + variables for ARCH and CROSS_COMPILE
 
-# run compilation without cleanup at first to allow compilation with saved states 
+# run compilation without cleanup at first to allow compilation with saved states
 # so a complete recompile doesn't need to be done all the time
-- block: 
- 
+- block:
+
     - name: copy config to build path
-      copy: 
+      copy:
         src: "{{ config_path }}"
         dest: "{{ kernel_build_path }}/.config"
-     
+
     - name: accept default parameters for new kernel options
-      make: 
+      make:
         chdir: "{{ kernel_build_path }}"
         target: olddefconfig
-      environment: 
+      environment:
         MAKEFLAGS: "-j {{ compile_number_parallel_jobs }} {{ compile_makeflags }}"
         CFLAGS: "{{ compile_flags }}"
-     
+
     - name: get patches to apply
-      find: 
-        paths: "{{playbook_dir }}/patches"
+      find:
+        paths: "{{ playbook_dir }}/patches"
       register: patches
-      
+
     - name: inject patches if they should be applied
-      patch: 
+      patch:
         src: "{{ item.path }}"
         basedir: "{{ kernel_build_path }}"
         strip: 1
@@ -36,7 +36,7 @@
       make:
         chdir: "{{ kernel_build_path }}"
         target: "_all"
-      environment: 
+      environment:
         MAKEFLAGS: "-j {{ compile_number_parallel_jobs }} {{ compile_makeflags }}"
         CFLAGS: "{{ compile_flags }}"
 
@@ -45,37 +45,37 @@
          chdir: "{{ kernel_build_path }}"
          target: "modules_install"
       become: yes
-      environment: 
+      environment:
         MAKEFLAGS: "-j {{ compile_number_parallel_jobs }} {{ compile_makeflags }}"
         CFLAGS: "{{ compile_flags }}"
 
-  rescue: 
+  rescue:
 
     - name: clean kernel build environment
-      make: 
+      make:
         chdir: "{{ kernel_build_path }}"
         target: mrproper
-         
+
     - name: copy config to build path
-      copy: 
+      copy:
         src: "{{ config_path }}"
         dest: "{{ kernel_build_path }}/.config"
-     
+
     - name: accept default parameters for new kernel options
-      make: 
+      make:
         chdir: "{{ kernel_build_path }}"
         target: olddefconfig
-      environment: 
+      environment:
         MAKEFLAGS: "-j {{ compile_number_parallel_jobs }} {{ compile_makeflags }}"
         CFLAGS: "{{ compile_flags }}"
-     
+
     - name: get patches to apply
-      find: 
+      find:
         paths: "files"
       register: patches
-      
+
     - name: inject patches if they should be applied
-      patch: 
+      patch:
         src: "{{ item.path }}"
         basedir: "{{ kernel_build_path }}"
         strip: 1
@@ -85,7 +85,7 @@
       make:
         chdir: "{{ kernel_build_path }}"
         target: "_all"
-      environment: 
+      environment:
         MAKEFLAGS: "-j {{ compile_number_parallel_jobs }} {{ compile_makeflags }}"
         CFLAGS: "{{ compile_flags }}"
 
@@ -94,9 +94,6 @@
          chdir: "{{ kernel_build_path }}"
          target: "modules_install"
       become: yes
-      environment: 
+      environment:
         MAKEFLAGS: "-j {{ compile_number_parallel_jobs }}"
         CFLAGS: "{{ compile_flags }}"
-     
-
- 

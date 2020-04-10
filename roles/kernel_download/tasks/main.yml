@@ -2,13 +2,13 @@
 # tasks file for roles/kernel_download
 
 - name: get latest kernel version release info
-  uri: 
+  uri:
     url: https://www.kernel.org/releases.json
     return_content: yes
   check_mode: false
   register: release_info
   when: kernel_version == "latest"
-  
+
 - name: get latest available kernel version
   set_fact:
     latest_available_kernel:  "{{ release_info.json.latest_stable.version }}"
@@ -24,35 +24,35 @@
     kernel_download: 'https://cdn.kernel.org/pub/linux/kernel/v{{ kernel_version.split(".")[0] }}.x/linux-{{ kernel_version }}.tar.xz'
   when: kernel_version != "latest"
 
-- name: get download link for latest kernel pgp sign 
+- name: get download link for latest kernel pgp sign
   set_fact:
     kernel_signature: "{{ (release_info.json.releases | selectattr('version', 'equalto', latest_available_kernel) | first).pgp }}"
   when: kernel_version == "latest"
-  
-- name: get download link for latest kernel pgp sign 
+
+- name: get download link for latest kernel pgp sign
   set_fact:
     kernel_signature: 'https://cdn.kernel.org/pub/linux/kernel/v{{ kernel_version.split(".")[0] }}.x/linux-{{ kernel_version }}.tar.sign'
   when: kernel_version != "latest"
-  
+
 - name: get installed kernel version
-  command: uname -r 
+  command: uname -r
   register: kernel_version_local
   check_mode: false
   when: kernel_version == "latest"
-  
+
 - name: clear kernel version from substring
-  set_fact: 
+  set_fact:
     kernel_version_local: "{{ kernel_version_local.stdout |  replace(kernel_substring , '') }}"
   when: kernel_version == "latest"
 
 - name: end playbook if there's nothing to do
   meta: end_host
-  when: 
-    - kernel_version_local is version(latest_available_kernel | default(-1) , '>') 
+  when:
+    - kernel_version_local is version(latest_available_kernel | default(-1) , '>')
     - kernel_version == "latest"
 
 - name: set kernel_version to real version
-  set_fact: 
+  set_fact:
     kernel_version: "{{ latest_available_kernel }}"
   when: kernel_version == "latest"
 
@@ -62,7 +62,7 @@
     prefix: kernel_build-
   register: directory
   when: build_directory is undefined
-  
+
 - name: create build directory for kernel build process
   file:
     path: "{{ build_directory }}"
@@ -71,12 +71,12 @@
   when: build_directory is defined
 
 - name: download linux kernel from kernel.org
-  get_url: 
+  get_url:
     url: "{{ kernel_download }}"
     dest: "{{ directory.path | default(build_directory) | default('/tmp') }}"
   register: kernel_file_name
-    
-- name: download linux kernel signature 
+
+- name: download linux kernel signature
   get_url:
     url: "{{ kernel_signature }}"
     dest: "{{ directory.path | default(build_directory) | default('/tmp')  }}"
@@ -85,20 +85,24 @@
 # make sure beforehand that the singature of the signing kernel maintainer is already known to the system (e.g. Greg Kroah-Hartman at the time of writing)
 # will fail automaticaly when validation fails, as return code will be unequal to 0
 - name: validate download with signature
-  shell: xz -cd {{ kernel_file_name.dest | quote }} | gpg2 --verify {{ kernel_signature_file_name.dest | quote }} -
+  shell: set -o pipefail && xz -cd {{ kernel_file_name.dest | quote }} | gpg2 --verify {{ kernel_signature_file_name.dest | quote }} -
+  when:
+    - kernel_file_name
+    - kernel_signature_file_name
 
 - name: check if kernel tar exists
   stat:
     path: "{{ kernel_file_name.dest }}"
   register: kernel_exists
 
-- name: unpack the kernel 
-  unarchive: 
+- name: unpack the kernel
+  unarchive:
     src: "{{ kernel_file_name.dest }}"
     dest: "{{ directory.path | default(build_directory) | default('/tmp') }}"
     remote_src: yes
     creates: "{{ kernel_file_name.dest | replace('.tar.xz', '') }}"
   when: kernel_exists.stat.exists
 
-- set_fact: 
+- name: set kernel build path variable
+  set_fact:
     kernel_build_path: "{{ kernel_file_name.dest | replace('.tar.xz', '') }}"
