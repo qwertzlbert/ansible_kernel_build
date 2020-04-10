@@ -1,0 +1,5 @@
+---
+# defaults file for roles/build_initram
+
+compile_architecture: "{{ ansible_architecture }}"
+kernel_substring: "-ansible-compile" 

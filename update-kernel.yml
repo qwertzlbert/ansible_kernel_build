@@ -1,0 +1,9 @@
+---
+
+- name: upgrade kernel version on arch linux
+  hosts: arch
+  roles:
+    - kernel_download
+    - kernel_compile
+    - build_initram
+    - update_bootloader

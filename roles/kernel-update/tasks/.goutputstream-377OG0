@@ -1,0 +1,9 @@
+---
+
+- name: get latest kernel version release info
+  uri: 
+    url: https://www.kernel.org/releases.json
+    return_content: yes
+  register: release_info
+        
+- name: 

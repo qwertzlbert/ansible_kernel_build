@@ -1,0 +1,4 @@
+---
+# defaults file for roles/update_bootloader
+
+bootloader: grub_v2

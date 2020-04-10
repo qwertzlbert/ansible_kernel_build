@@ -1,0 +1,23 @@
+---
+
+
+- name: copy kernel to boot directory
+  copy: 
+    src: "{{ kernel_build_path }}/arch/{{ compile_architecture }}/boot/bzImage"
+    dest: "/boot/vmlinuz-linux{{ kernel_version  | replace('.', '-') }}{{ kernel_substring }}"
+  become: yes
+
+- name: create and copy own mkinitcpio config to target
+  template:
+    src: "mkinitcpio.conf.j2"
+    dest: "{{ kernel_build_path }}/mkinitcpio.conf"
+
+- name: create and copy mkinitcpio preset to target
+  template:
+    src: "mkinitcpio-linux-preset.j2"
+    dest: "/etc/mkinitcpio.d/linux{{ kernel_version  | replace('.', '-')  }}{{ kernel_substring }}.preset"
+  become: yes
+
+- name: create initram image
+  command: mkinitcpio -c {{ kernel_build_path }}/mkinitcpio.conf -p linux{{ kernel_version  | replace('.', '-')  }}{{ kernel_substring }}
+  become: yes

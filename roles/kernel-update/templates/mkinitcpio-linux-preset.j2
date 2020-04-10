@@ -1,0 +1,11 @@
+# mkinitcpio preset file for the 'linux' package
+
+ALL_config="/etc/mkinitcpio.conf"
+ALL_kver="/boot/vmlinuz-linux{{ latest_available_kernel | replace(".", "-") }}{{ kernel_substring }}"
+
+PRESETS=('default' 'fallback')
+
+default_image="/boot/initramfs-linux{{ latest_available_kernel | replace(".", "-") }}{{ kernel_substring }}.img"
+
+fallback_image="/boot/initramfs-linux{{ latest_available_kernel | replace(".", "-") }}{{ kernel_substring }}-fallback.img"
+fallback_options="-S autodetect"

@@ -1,0 +1,6 @@
+---
+# tasks file for roles/update_bootloader
+
+- name: include tasks for grub v2
+  include_tasks: grub_v2.yml
+  when: bootloader == "grub_v2"

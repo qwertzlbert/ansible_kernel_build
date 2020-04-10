@@ -1,0 +1,8 @@
+---
+# defaults file for roles/kernel_compile
+
+compile_number_parallel_jobs: "{{ ansible_processor_vcpus }}"
+compile_makeflags: ""
+compile_flags: ""
+compile_architecture: "{{ ansible_architecture }}"
+config_path: "{{ playbook_dir }}/configs/config"

@@ -1,0 +1,10 @@
+---
+# tasks file for roles/build_initram
+
+- debug:
+    msg: "{{ ansible_distribution }}"
+
+- name: use initram method for arch linux systems
+  include_tasks: arch.yml
+  when: ansible_distribution == "Archlinux" 
+
