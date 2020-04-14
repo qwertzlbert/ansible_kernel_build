@@ -22,6 +22,6 @@
   command: mkinitcpio -c {{ kernel_build_path }}/mkinitcpio.conf -p linux{{ kernel_version  | replace('.', '-')  }}{{ kernel_substring }}
   args:
     creates:
-      - "/boot/{{ initramfs-linux }}{{ kernel_version  | replace('.', '-')  }}{{ kernel_substring }}.img"
-      - "/boot/{{ initramfs-linux }}{{ kernel_version  | replace('.', '-')  }}{{ kernel_substring }}-fallback.img"
+      - "/boot/initramfs-linux{{ kernel_version  | replace('.', '-')  }}{{ kernel_substring }}.img"
+      - "/boot/initramfs-linux{{ kernel_version  | replace('.', '-')  }}{{ kernel_substring }}-fallback.img"
   become: yes
