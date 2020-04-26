@@ -2,9 +2,9 @@
 ryzen ansible_connection=local
 
 [arch:vars]
-kernel_substring="-ARCH-CUSTOM"
+kernel_substring="-ARCH-CUSTOM-CLANG"
 kernel_version="latest"
-build_directory="/home/simon/kernelbuild" 
+build_directory="/home/simon/kernelbuild"
 compile_flags="-O2 -march=znver1"
 bootloader="grub_v2"
-
+C_compiler="clang"

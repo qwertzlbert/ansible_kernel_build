@@ -16,9 +16,12 @@
       make:
         chdir: "{{ kernel_build_path }}"
         target: olddefconfig
+        params:
+          CC: "{{ C_compiler }}"
       environment:
         MAKEFLAGS: "-j {{ compile_number_parallel_jobs }} {{ compile_makeflags }}"
         CFLAGS: "{{ compile_flags }}"
+
 
     - name: get patches to apply
       find:
@@ -36,6 +39,8 @@
       make:
         chdir: "{{ kernel_build_path }}"
         target: "_all"
+        params:
+          CC: "{{ C_compiler }}"
       environment:
         MAKEFLAGS: "-j {{ compile_number_parallel_jobs }} {{ compile_makeflags }}"
         CFLAGS: "{{ compile_flags }}"
@@ -44,6 +49,8 @@
       make:
          chdir: "{{ kernel_build_path }}"
          target: "modules_install"
+         params:
+           CC: "{{ C_compiler }}"
       become: yes
       environment:
         MAKEFLAGS: "-j {{ compile_number_parallel_jobs }} {{ compile_makeflags }}"
@@ -65,6 +72,8 @@
       make:
         chdir: "{{ kernel_build_path }}"
         target: olddefconfig
+        params:
+          CC: "{{ C_compiler }}"
       environment:
         MAKEFLAGS: "-j {{ compile_number_parallel_jobs }} {{ compile_makeflags }}"
         CFLAGS: "{{ compile_flags }}"
@@ -85,14 +94,18 @@
       make:
         chdir: "{{ kernel_build_path }}"
         target: "_all"
+        params:
+          CC: "{{ C_compiler }}"
       environment:
         MAKEFLAGS: "-j {{ compile_number_parallel_jobs }} {{ compile_makeflags }}"
         CFLAGS: "{{ compile_flags }}"
 
     - name: compile kernel modules
       make:
-         chdir: "{{ kernel_build_path }}"
-         target: "modules_install"
+        chdir: "{{ kernel_build_path }}"
+        target: "modules_install"
+        params:
+          CC: "{{ C_compiler }}"
       become: yes
       environment:
         MAKEFLAGS: "-j {{ compile_number_parallel_jobs }}"
